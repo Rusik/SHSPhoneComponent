@@ -12,15 +12,15 @@
 /**
  Accessory view shows flag images in handsome way.
  Created due to ios7 design chagnes.
-*/
+ */
 @interface SHSFlagAccessoryView : UIView
 {
-    UIImageView *imageView;
+	UIImageView *imageView;
 }
 
 /**
  Set image for accessory view.
  */
--(void) setImage:(UIImage *) image;
+- (void)setImage:(UIImage *)image;
 
 @end

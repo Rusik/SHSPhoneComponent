@@ -12,52 +12,45 @@
 
 #pragma mark Predefined Configs
 
--(NSDictionary *) resetConfig
-{
-    return @{ @"default": @{ @"format": @"#############", @"image": [NSNull null]} };
+- (NSDictionary *)resetConfig {
+	return @{ @"default": @{ @"format": @"#############", @"image": [NSNull null] }
+           };
 }
--(NSDictionary *) defaultConfig
-{
-    return @{ @"default": @{ @"format": @"+# (###) ###-##-##", @"image": [NSNull null]} };
+
+- (NSDictionary *)defaultConfig {
+	return @{ @"default": @{ @"format": @"+# (###) ###-##-##", @"image": [NSNull null] }
+           };
 }
 
 #pragma mark -
 #pragma mark Format Setters
 
--(void) resetFormats
-{
-    config = [[NSMutableDictionary alloc]initWithDictionary:[self resetConfig]];
+- (void)resetFormats {
+	config = [[NSMutableDictionary alloc]initWithDictionary:[self resetConfig]];
 }
 
--(void) setDefaultFormat
-{
-    config = [[NSMutableDictionary alloc]initWithDictionary:[self defaultConfig]];
+- (void)setDefaultFormat {
+	config = [[NSMutableDictionary alloc]initWithDictionary:[self defaultConfig]];
 }
 
--(void) setDefaultOutputPattern:(NSString *)pattern imagePath:(NSString *)imagePath
-{
-    if (!imagePath) imagePath = (id)[NSNull null];
-    [config setObject:@{@"format": pattern, @"image": imagePath} forKey:@"default"];
+- (void)setDefaultOutputPattern:(NSString *)pattern imagePath:(NSString *)imagePath {
+	if (!imagePath) imagePath = (id)[NSNull null];
+	[config setObject:@{ @"format": pattern, @"image": imagePath } forKey:@"default"];
 }
 
--(void) setDefaultOutputPattern:(NSString *)pattern
-{
-    [config setObject:@{@"format": pattern, @"image": [NSNull null]} forKey:@"default"];
+- (void)setDefaultOutputPattern:(NSString *)pattern {
+	[config setObject:@{ @"format": pattern, @"image": [NSNull null] } forKey:@"default"];
 }
 
--(void) addOutputPattern:(NSString *)pattern forRegExp:(NSString *)regexp imagePath:(NSString *)imagePath
-{
-    if (!imagePath) imagePath = (id)[NSNull null];
-    [config setObject:@{@"format": pattern, @"image": imagePath} forKey:regexp];
+- (void)addOutputPattern:(NSString *)pattern forRegExp:(NSString *)regexp imagePath:(NSString *)imagePath {
+	if (!imagePath) imagePath = (id)[NSNull null];
+	[config setObject:@{ @"format": pattern, @"image": imagePath } forKey:regexp];
 }
 
--(void) addOutputPattern:(NSString *)pattern forRegExp:(NSString *)regexp
-{
-    [config setObject:@{@"format": pattern, @"image": [NSNull null]} forKey:regexp];
+- (void)addOutputPattern:(NSString *)pattern forRegExp:(NSString *)regexp {
+	[config setObject:@{ @"format": pattern, @"image": [NSNull null] } forKey:regexp];
 }
 
 #pragma mark -
 
 @end
-
-

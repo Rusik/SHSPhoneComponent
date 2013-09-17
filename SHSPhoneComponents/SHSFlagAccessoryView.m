@@ -10,33 +10,27 @@
 
 @implementation SHSFlagAccessoryView
 
-- (id)init
-{
-    self = [super initWithFrame:CGRectMake(0, 0, 20, 18)];
-    if (self) {
-        imageView = [[UIImageView alloc]initWithFrame:CGRectMake([self startPoint], 0, 18, 18)];
-        imageView.contentMode = UIViewContentModeScaleAspectFit;
-        [self addSubview:imageView];
-    }
-    return self;
+- (id)init {
+	self = [super initWithFrame:CGRectMake(0, 0, 20, 18)];
+	if (self) {
+		imageView = [[UIImageView alloc]initWithFrame:CGRectMake([self startPoint], 0, 18, 18)];
+		imageView.contentMode = UIViewContentModeScaleAspectFit;
+		[self addSubview:imageView];
+	}
+	return self;
 }
 
--(int) startPoint
-{
-    NSString *version = [[UIDevice currentDevice] systemVersion];
-    if ([version compare:@"7" options:NSNumericSearch] != NSOrderedAscending)
-    {
-       return 6;
-    }
-    else
-    {
-       return 0;
-    }
+- (int)startPoint {
+	NSString *version = [[UIDevice currentDevice] systemVersion];
+	if ([version compare:@"7" options:NSNumericSearch] != NSOrderedAscending) {
+		return 6;
+	} else {
+		return 0;
+	}
 }
 
--(void) setImage:(UIImage *) image
-{
-    imageView.image = image;
+- (void)setImage:(UIImage *)image {
+	imageView.image = image;
 }
 
 @end

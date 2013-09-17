@@ -16,148 +16,140 @@
 #pragma mark -
 #pragma mark Logic Method
 
-+(void) setImageLeftView:(UITextField *)textField image:(UIImage *)image
-{
-    if (![textField.leftView isKindOfClass:[SHSFlagAccessoryView class]])
-    {
-        textField.leftView = [[SHSFlagAccessoryView alloc] init];
++ (void)setImageLeftView:(UITextField *)textField image:(UIImage *)image {
+	if (![textField.leftView isKindOfClass:[SHSFlagAccessoryView class]]) {
+		textField.leftView = [[SHSFlagAccessoryView alloc] init];
+	}
+	textField.leftViewMode =  UITextFieldViewModeAlways;
+	((SHSFlagAccessoryView *)textField.leftView).image = image;
+}
+
++ (void)updateLeftImageView:(UITextField *)textField imagePath:(NSString *)imagePath {
+	if (imagePath == (id)[NSNull null]) imagePath = nil;
+	UIImage *givenImage = [UIImage imageNamed:imagePath];
+
+	if (givenImage)
+		[self setImageLeftView:textField image:givenImage];
+	else
+		textField.leftViewMode = UITextFieldViewModeNever;
+}
+
++ (void)applyFormat:(SHSPhoneTextField *)textField forText:(NSString *)text {
+	NSDictionary *result = [textField.formatter valuesForString:text];
+	textField.text = result[@"text"];
+
+	if (textField.canAffectLeftViewByFormatter)
+		[self updateLeftImageView:textField imagePath:result[@"image"]];
+}
+
++ (BOOL)logicTextField:(SHSPhoneTextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+
+    if ([textField.formatter digitOnlyString:textField.text].length == 11) {
+        if (![string isEqualToString:@""]) {
+            return NO;
+        }
     }
-    textField.leftViewMode =  UITextFieldViewModeAlways;
-    ((SHSFlagAccessoryView *)textField.leftView).image = image;
-}
 
-+(void) updateLeftImageView:(UITextField *)textField imagePath:(NSString *)imagePath
-{
-    if (imagePath == (id)[NSNull null]) imagePath = nil;
-    UIImage *givenImage = [UIImage imageNamed:imagePath];
-    
-    if (givenImage)
-        [self setImageLeftView:textField image:givenImage];
-    else
-       textField.leftViewMode = UITextFieldViewModeNever; 
-}
+	NSString *newString;
+	BOOL isDeleting = (string.length == 0);
+	int caretPosition = [self pushCaretPosition:textField range:range];
 
-+(void) applyFormat:(SHSPhoneTextField *)textField forText:(NSString *)text
-{
-    NSDictionary *result = [textField.formatter valuesForString:text];
-    textField.text = result[@"text"];
-    
-    if ( textField.canAffectLeftViewByFormatter )
-        [self updateLeftImageView:textField imagePath:result[@"image"]];
-}
+	if (isDeleting)
+		newString = [SHSPhoneNumberFormatter formattedRemove:textField.text AtIndex:range];
+	else
+		newString = [textField.text stringByReplacingCharactersInRange:range withString:string];
 
-+(BOOL)logicTextField:(SHSPhoneTextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
-{
-    NSString *newString;
-    BOOL isDeleting = (string.length == 0);
-    int caretPosition = [self pushCaretPosition:textField range:range];
-    
-    if (isDeleting)
-        newString = [SHSPhoneNumberFormatter formattedRemove:textField.text AtIndex:range];
-    else
-        newString = [textField.text stringByReplacingCharactersInRange:range withString:string];
-    
-    [self applyFormat:textField forText:newString];
-    [self popCaretPosition:textField range:range caretPosition:caretPosition];
-    
-    if (textField.textDidChangeBlock) textField.textDidChangeBlock(textField);
-    return NO;
+	[self applyFormat:textField forText:newString];
+	[self popCaretPosition:textField range:range caretPosition:caretPosition];
+
+	if (textField.textDidChangeBlock) textField.textDidChangeBlock(textField);
+	return NO;
 }
 
 #pragma mark -
 #pragma mark Caret Control
 
-+(int) pushCaretPosition:(UITextField *)textField range:(NSRange)range
-{
-    NSString *subString = [textField.text substringFromIndex:range.location + range.length];
-    return [SHSPhoneNumberFormatter valuableCharCountIn:subString];
++ (int)pushCaretPosition:(UITextField *)textField range:(NSRange)range {
+	NSString *subString = [textField.text substringFromIndex:range.location + range.length];
+	return [SHSPhoneNumberFormatter valuableCharCountIn:subString];
 }
 
-+(void) popCaretPosition:(UITextField *)textField range:(NSRange)range caretPosition:(int)caretPosition
-{
-    if (range.length == 0) range.length = 1;
-    
-    NSString *text = textField.text;
-    int lasts = caretPosition;
-    int start = [text length];
-    for (int index = [text length] - 1; index >= 0 && lasts > 0; index--) {
-        unichar ch = [text characterAtIndex:index];
-        if ([SHSPhoneNumberFormatter isValuableChar:ch]) lasts--;
-        if (lasts <= 0 )
-        {
-            start = index;
-            break;
-        }
-    }
++ (void)popCaretPosition:(UITextField *)textField range:(NSRange)range caretPosition:(int)caretPosition {
+	if (range.length == 0) range.length = 1;
 
-    [self selectTextForInput:textField atRange:NSMakeRange(start, 0)];
+	NSString *text = textField.text;
+	int lasts = caretPosition;
+	int start = [text length];
+	for (int index = [text length] - 1; index >= 0 && lasts > 0; index--) {
+		unichar ch = [text characterAtIndex:index];
+		if ([SHSPhoneNumberFormatter isValuableChar:ch]) lasts--;
+		if (lasts <= 0) {
+			start = index;
+			break;
+		}
+	}
+
+	[self selectTextForInput:textField atRange:NSMakeRange(start, 0)];
 }
 
 + (void)selectTextForInput:(UITextField *)input atRange:(NSRange)range {
-    UITextPosition *start = [input positionFromPosition:[input beginningOfDocument]
-                                                 offset:range.location ];
-    UITextPosition *end = [input positionFromPosition:start
-                                               offset:range.length];
-    [input setSelectedTextRange:[input textRangeFromPosition:start toPosition:end]];
+	UITextPosition *start = [input positionFromPosition:[input beginningOfDocument]
+	                                             offset:range.location];
+	UITextPosition *end = [input positionFromPosition:start
+	                                           offset:range.length];
+	[input setSelectedTextRange:[input textRangeFromPosition:start toPosition:end]];
 }
 
 #pragma mark -
 #pragma mark UITextField Delegate
 
--(BOOL)textField:(SHSPhoneTextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
-{
-    [SHSPhoneLogic logicTextField:textField shouldChangeCharactersInRange:range replacementString:string];
-    
-    if ([_delegate respondsToSelector:@selector(textField:shouldChangeCharactersInRange:replacementString:)])
-        [_delegate textField:textField shouldChangeCharactersInRange:range replacementString:string];
-    
-    return NO;
+- (BOOL)textField:(SHSPhoneTextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+	[SHSPhoneLogic logicTextField:textField shouldChangeCharactersInRange:range replacementString:string];
+
+	if ([_delegate respondsToSelector:@selector(textField:shouldChangeCharactersInRange:replacementString:)])
+		[_delegate textField:textField shouldChangeCharactersInRange:range replacementString:string];
+
+	return NO;
 }
 
-- (BOOL)textFieldShouldClear:(SHSPhoneTextField *)textField
-{
-    if ( textField.canAffectLeftViewByFormatter) textField.leftViewMode = UITextFieldViewModeNever;
+- (BOOL)textFieldShouldClear:(SHSPhoneTextField *)textField {
+	if (textField.canAffectLeftViewByFormatter) textField.leftViewMode = UITextFieldViewModeNever;
 
-    if ([_delegate respondsToSelector:@selector(textFieldShouldClear:)])
-        return [_delegate textFieldShouldClear:textField];
-    
-    return YES;
+	if ([_delegate respondsToSelector:@selector(textFieldShouldClear:)])
+		return [_delegate textFieldShouldClear:textField];
+
+	return YES;
 }
 
-- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
-{
-    if ([_delegate respondsToSelector:@selector(textFieldShouldBeginEditing:)])
-        return [_delegate textFieldShouldBeginEditing:textField];
-    
-    return YES;
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+	if ([_delegate respondsToSelector:@selector(textFieldShouldBeginEditing:)])
+		return [_delegate textFieldShouldBeginEditing:textField];
+
+	return YES;
 }
 
-- (void)textFieldDidBeginEditing:(UITextField *)textField
-{
-    if ([_delegate respondsToSelector:@selector(textFieldDidBeginEditing:)])
-        [_delegate textFieldDidBeginEditing:textField];
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+	if ([_delegate respondsToSelector:@selector(textFieldDidBeginEditing:)])
+		[_delegate textFieldDidBeginEditing:textField];
 }
 
-- (BOOL)textFieldShouldEndEditing:(UITextField *)textField
-{
-    if ([_delegate respondsToSelector:@selector(textFieldShouldEndEditing:)])
-        return [_delegate textFieldShouldEndEditing:textField];
-    
-    return YES;
+- (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
+	if ([_delegate respondsToSelector:@selector(textFieldShouldEndEditing:)])
+		return [_delegate textFieldShouldEndEditing:textField];
+
+	return YES;
 }
 
-- (void)textFieldDidEndEditing:(UITextField *)textField
-{
-    if ([_delegate respondsToSelector:@selector(textFieldDidEndEditing:)])
-        [_delegate textFieldDidEndEditing:textField];
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+	if ([_delegate respondsToSelector:@selector(textFieldDidEndEditing:)])
+		[_delegate textFieldDidEndEditing:textField];
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField
-{
-    if ([_delegate respondsToSelector:@selector(textFieldShouldReturn:)])
-        return [_delegate textFieldShouldReturn:textField];
-    
-    return YES;
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+	if ([_delegate respondsToSelector:@selector(textFieldShouldReturn:)])
+		return [_delegate textFieldShouldReturn:textField];
+
+	return YES;
 }
 
 @end

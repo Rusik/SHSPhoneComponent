@@ -11,64 +11,67 @@
 
 @implementation SHSFlags
 
-+ (NSString *) FlagRU { return @"SHSPhoneImage.bundle/flag_ru"; }
-+ (NSString *) FlagUS { return @"SHSPhoneImage.bundle/flag_us"; }
-+ (NSString *) FlagDE { return @"SHSPhoneImage.bundle/flag_de"; }
-+ (NSString *) FlagUA { return @"SHSPhoneImage.bundle/flag_ua"; }
++ (NSString *)FlagRU {
+	return @"SHSPhoneImage.bundle/flag_ru";
+}
+
++ (NSString *)FlagUS {
+	return @"SHSPhoneImage.bundle/flag_us";
+}
+
++ (NSString *)FlagDE {
+	return @"SHSPhoneImage.bundle/flag_de";
+}
+
++ (NSString *)FlagUA {
+	return @"SHSPhoneImage.bundle/flag_ua";
+}
 
 @end
 
 @implementation SHSPhoneTextField
 
--(void) logicInitialization
-{
-    _formatter = [[SHSPhoneNumberFormatter alloc]init];
-    logicDelegate = [[SHSPhoneLogic alloc] init];
-    _canAffectLeftViewByFormatter = YES;
-    
-    [super setDelegate:logicDelegate];
-    self.keyboardType = UIKeyboardTypeNumberPad;
+- (void)logicInitialization {
+	_formatter = [[SHSPhoneNumberFormatter alloc]init];
+	logicDelegate = [[SHSPhoneLogic alloc] init];
+	_canAffectLeftViewByFormatter = YES;
+
+	[super setDelegate:logicDelegate];
+	self.keyboardType = UIKeyboardTypeNumberPad;
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (self) {
-        [self logicInitialization];
-    }
-    return self;
+- (id)initWithCoder:(NSCoder *)aDecoder {
+	self = [super initWithCoder:aDecoder];
+	if (self) {
+		[self logicInitialization];
+	}
+	return self;
 }
 
-- (id)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        [self logicInitialization];
-    }
-    return self;
+- (id)initWithFrame:(CGRect)frame {
+	self = [super initWithFrame:frame];
+	if (self) {
+		[self logicInitialization];
+	}
+	return self;
 }
 
 #pragma mark -
 #pragma mark Delegates
 
--(void) setDelegate:(id<UITextFieldDelegate>)delegate
-{
-    logicDelegate.delegate = delegate;
+- (void)setDelegate:(id <UITextFieldDelegate> )delegate {
+	logicDelegate.delegate = delegate;
 }
 
--(id<UITextFieldDelegate>) delegate
-{
-    return logicDelegate.delegate;
+- (id <UITextFieldDelegate> )delegate {
+	return logicDelegate.delegate;
 }
 
 #pragma mark -
 #pragma mark Additional Text Setter
 
--(void) setFormattedText:(NSString *)text
-{
-    [SHSPhoneLogic applyFormat:self forText:text];
+- (void)setFormattedText:(NSString *)text {
+	[SHSPhoneLogic applyFormat:self forText:text];
 }
 
 @end
-
-
