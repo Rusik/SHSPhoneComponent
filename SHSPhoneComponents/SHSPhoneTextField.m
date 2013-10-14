@@ -71,7 +71,11 @@
 #pragma mark Additional Text Setter
 
 - (void)setFormattedText:(NSString *)text {
-	[SHSPhoneLogic applyFormat:self forText:text];
+    if (text) {
+        [SHSPhoneLogic applyFormat:self forText:text];
+    } else {
+        [SHSPhoneLogic applyFormat:self forText:@""];
+    }
 }
 
 @end
